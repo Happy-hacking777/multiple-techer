@@ -66,8 +66,9 @@ function App() {
   const [feedback, setFeedback] = useState(null)
   const [previousExercises, setPreviousExercises] = useState([])
   const [gifToShow, setGifToShow] = useState(null)
+  const [lastWrongExercise, setLastWrongExercise] = useState(null)
   const inputRef = useRef(null)
-  const gifs = ['/gifs/cat1.gif', '/gifs/cat2.gif', '/gifs/dog1.gif', '/public/gifs/cat3.gif', '/public/gifs/cat4.gif', '/public/gifs/cat5.gif', '/public/gifs/cat6.gif', '/public/gifs/cat7.gif', '/public/gifs/cat8.gif', '/public/gifs/cat9.gif', '/public/gifs/cat10.gif', '/public/gifs/cat11.gif', '/public/gifs/cat12.gif', '/public/gifs/cat13.gif', '/public/gifs/cat14.gif', '/public/gifs/cat15.gif', '/public/gifs/cat16.gif', '/public/gifs/cat17.gif', '/public/gifs/dog2.gif', '/public/gifs/dog3.gif', '/public/gifs/dog4.gif', '/public/gifs/dog5.gif', '/public/gifs/dog6.gif', '/public/gifs/dog7.gif', '/public/gifs/dog8.gif', '/public/gifs/dog9.gif', '/public/gifs/dog10.gif', '/public/gifs/dog11.gif', '/public/gifs/dog12.gif', '/public/gifs/dog13.gif', '/public/gifs/dog14.gif', '/public/gifs/dog15.gif', '/public/gifs/dog16.gif', '/public/gifs/dog17.gif']
+  const gifs = ['/gifs/cat1.gif', '/gifs/cat2.gif', '/gifs/dog1.gif', '/gifs/cat3.gif', '/gifs/cat4.gif', '/gifs/cat5.gif', '/gifs/cat6.gif', '/gifs/cat7.gif', '/gifs/cat8.gif', '/gifs/cat9.gif', '/gifs/cat10.gif', '/gifs/cat11.gif', '/gifs/cat12.gif', '/gifs/cat13.gif', '/gifs/cat14.gif', '/gifs/cat15.gif', '/gifs/cat16.gif', '/gifs/cat17.gif', '/gifs/dog2.gif', '/gifs/dog3.gif', '/gifs/dog4.gif', '/gifs/dog5.gif', '/gifs/dog6.gif', '/gifs/dog7.gif', '/gifs/dog8.gif', '/gifs/dog9.gif', '/gifs/dog10.gif', '/gifs/dog11.gif', '/gifs/dog12.gif', '/gifs/dog13.gif', '/gifs/dog14.gif', '/gifs/dog15.gif', '/gifs/dog16.gif', '/gifs/dog17.gif']
 
   useEffect(() => {
     if (mode && score < 15) {
@@ -77,6 +78,12 @@ function App() {
       setPreviousExercises(prev => [...prev, newExercise])
     }
   }, [mode, score])
+
+  useEffect(() => {
+    if (exercise && !gifToShow && !feedback && inputRef.current) {
+      inputRef.current.focus()
+    }
+  }, [exercise, gifToShow, feedback])
 
   useEffect(() => {
     if (!gifToShow && inputRef.current) {
@@ -108,7 +115,16 @@ function App() {
     setUserAnswer('')
     if (inputRef.current) inputRef.current.focus()
     setFeedback(isCorrect ? 'Super gemacht!' : '😢 Falsch')
-    setTimeout(() => setFeedback(null), 1000)
+
+    if (!isCorrect) {
+      setLastWrongExercise(exercise)
+      setTimeout(() => {
+        setFeedback(null)
+        const next = generateExercise(mode, previousExercises)
+        setExercise(next)
+        setPreviousExercises(prev => [...prev, next])
+      }, 4000)
+    }
 
     if (isCorrect) {
       const randomGif = gifs[Math.floor(Math.random() * gifs.length)]
@@ -116,17 +132,11 @@ function App() {
       setTimeout(() => setGifToShow(null), 4000)
     }
 
-    if (score + (isCorrect ? 1 : -1) < 20) {
+    if (score + (isCorrect ? 1 : -1) < 15) {
       if (isCorrect) {
         const next = generateExercise(mode, previousExercises)
         setExercise(next)
         setPreviousExercises(prev => [...prev, next])
-      } else {
-        setTimeout(() => {
-          const next = generateExercise(mode, previousExercises)
-          setExercise(next)
-          setPreviousExercises(prev => [...prev, next])
-        }, 4000)
       }
     } else {
       setEndTime(Date.now())
@@ -196,10 +206,10 @@ function App() {
             }}>
               <h2 style={{ fontSize: '3rem', color: '#d97706' }}>❌ Falsch 😢😭</h2>
               <p style={{ fontSize: '2.5rem', color: '#073b4c', margin: '1rem 0' }}>
-                {exercise.a} {exercise.op === '/' ? ':' : exercise.op} {exercise.b} = <span style={{ color: 'green', fontWeight: 'bold' }}>{calculateAnswer(exercise)}</span>
+                {lastWrongExercise?.a} {lastWrongExercise?.op === '/' ? ':' : lastWrongExercise?.op} {lastWrongExercise?.b} = <span style={{ color: 'green', fontWeight: 'bold' }}>{calculateAnswer(lastWrongExercise)}</span>
               </p>
               <p style={{ fontSize: '2rem', color: '#333' }}>
-                Du hast <strong>-1 Punkt</strong> bekommen 😭😢
+                Du hast <strong>1 Punkt</strong> verloren 😭😢
               </p>
             </div>
           ) : (
