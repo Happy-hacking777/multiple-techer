@@ -67,7 +67,7 @@ function App() {
   const [previousExercises, setPreviousExercises] = useState([])
   const [gifToShow, setGifToShow] = useState(null)
   const inputRef = useRef(null)
-  const gifs = ['/gifs/cat1.gif', '/gifs/cat2.gif', '/gifs/dog1.gif', '/public/gifs/cat3.gif', '/public/gifs/cat4.gif', '/public/gifs/cat5.gif', '/public/gifs/cat6.gif', '/public/gifs/dog2.gif', '/public/gifs/dog3.gif', '/public/gifs/dog4.gif', '/public/gifs/dog5.gif']
+  const gifs = ['/gifs/cat1.gif', '/gifs/cat2.gif', '/gifs/dog1.gif', '/public/gifs/cat3.gif', '/public/gifs/cat4.gif', '/public/gifs/cat5.gif', '/public/gifs/cat6.gif', '/public/gifs/cat7.gif', '/public/gifs/cat8.gif', '/public/gifs/cat9.gif', '/public/gifs/cat10.gif', '/public/gifs/cat11.gif', '/public/gifs/cat12.gif', '/public/gifs/cat13.gif', '/public/gifs/cat14.gif', '/public/gifs/cat15.gif', '/public/gifs/cat16.gif', '/public/gifs/cat17.gif', '/public/gifs/dog2.gif', '/public/gifs/dog3.gif', '/public/gifs/dog4.gif', '/public/gifs/dog5.gif', '/public/gifs/dog6.gif', '/public/gifs/dog7.gif', '/public/gifs/dog8.gif', '/public/gifs/dog9.gif', '/public/gifs/dog10.gif', '/public/gifs/dog11.gif', '/public/gifs/dog12.gif', '/public/gifs/dog13.gif', '/public/gifs/dog14.gif', '/public/gifs/dog15.gif', '/public/gifs/dog16.gif', '/public/gifs/dog17.gif']
 
   useEffect(() => {
     if (mode && score < 15) {
@@ -113,7 +113,7 @@ function App() {
     if (isCorrect) {
       const randomGif = gifs[Math.floor(Math.random() * gifs.length)]
       setGifToShow(randomGif)
-      setTimeout(() => setGifToShow(null), 40000)
+      setTimeout(() => setGifToShow(null), 4000)
     }
 
     if (score + (isCorrect ? 1 : -1) < 20) {
@@ -126,7 +126,7 @@ function App() {
           const next = generateExercise(mode, previousExercises)
           setExercise(next)
           setPreviousExercises(prev => [...prev, next])
-        }, 1200)
+        }, 4000)
       }
     } else {
       setEndTime(Date.now())
@@ -166,7 +166,7 @@ function App() {
             </button>
           </div>
         </div>
-      ) : score < 2 && endTime === null ? (
+      ) : score < 15 && endTime === null ? (
         <div className="game" style={{ textAlign: 'center', padding: '2rem', transform: 'translateY(-2%)' }}>
           {gifToShow ? (
             <>
@@ -183,9 +183,25 @@ function App() {
                 </h2>
               </div>
               <div className="gif-wrapper" style={{ marginTop: '1.5rem' }}>
-                <img src={gifToShow} alt="Belohnung" />
+              <img src={gifToShow} alt="Belohnung" style={{ width: '300px', height: 'auto' }} />
               </div>
             </>
+          ) : feedback === '😢 Falsch' ? (
+            <div style={{
+              backgroundColor: '#ffd166',
+              padding: '2rem',
+              borderRadius: '10px',
+              textAlign: 'center',
+              marginTop: '2rem'
+            }}>
+              <h2 style={{ fontSize: '3rem', color: '#d97706' }}>❌ Falsch 😢😭</h2>
+              <p style={{ fontSize: '2.5rem', color: '#073b4c', margin: '1rem 0' }}>
+                {exercise.a} {exercise.op === '/' ? ':' : exercise.op} {exercise.b} = <span style={{ color: 'green', fontWeight: 'bold' }}>{calculateAnswer(exercise)}</span>
+              </p>
+              <p style={{ fontSize: '2rem', color: '#333' }}>
+                Du hast <strong>-1 Punkt</strong> bekommen 😭😢
+              </p>
+            </div>
           ) : (
             <>
               <div style={{ marginBottom: '2rem' }}>
